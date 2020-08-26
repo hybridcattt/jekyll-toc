@@ -25,8 +25,8 @@ module Jekyll
       def inject_anchors_into_html
         @entries.each do |entry|
           # NOTE: `entry[:id]` is automatically URL encoded by Nokogiri
-          entry[:header_content].add_next_sibling(
-            %(<a class="anchor" href="##{entry[:id]}" aria-hidden="true"><span class="jekyll-toc-anchor-icon"></span></a>)
+          entry[:header_content].wrap(
+            %(<a class="anchor" href="##{entry[:id]}"></a>)
           )
         end
 
