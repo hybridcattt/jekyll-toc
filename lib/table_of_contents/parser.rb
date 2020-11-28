@@ -50,7 +50,6 @@ module Jekyll
         headers = Hash.new(0)
 
         (@doc.css(toc_headings) - @doc.css(toc_headings_in_no_toc_section))
-          .reject { |n| n.classes.include?(@configuration.no_toc_class) }
           .inject([]) do |entries, node|
           text = node.text
           id = node.attribute('id') || generate_toc_id(text)
@@ -64,7 +63,8 @@ module Jekyll
             node_name: node.name,
             header_content: node.children.first,
             header_content_node: node,
-            h_num: node.name.delete('h').to_i
+            h_num: node.name.delete('h').to_i,
+            no_toc: node.classes.include?(@configuration.no_toc_class)
           }
         end
       end
@@ -77,7 +77,8 @@ module Jekyll
 
         while i < entries.count
           entry = entries[i]
-          if entry[:h_num] == min_h_num
+          include_in_list = entry[:no_toc] == false
+          if entry[:h_num] == min_h_num && include_in_list
             # If the current entry should not be indented in the list, add the entry to the list
             a = Nokogiri::XML::Node.new "a", @doc
             a['href'] = "##{entry[:id]}"
@@ -92,7 +93,7 @@ module Jekyll
             end
             # Add the closing tag for the current entry in the list
             toc_list << %(</li>\n)
-          elsif entry[:h_num] > min_h_num
+          elsif entry[:h_num] > min_h_num && include_in_list
             # If the current entry should be indented in the list, generate a sublist
             nest_entries = get_nest_entries(entries[i, entries.count], min_h_num)
             toc_list << build_toc_list(nest_entries)
