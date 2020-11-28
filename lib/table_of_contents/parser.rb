@@ -81,7 +81,7 @@ module Jekyll
             # If the current entry should not be indented in the list, add the entry to the list
             a = Nokogiri::XML::Node.new "a", @doc
             a['href'] = "##{entry[:id]}"
-            a.children = entry[:header_content_node].children
+            a.children = entry[:header_content_node].dup.children
             toc_list << %(<li class="#{@configuration.item_class} #{@configuration.item_prefix}#{entry[:node_name]}">#{a.to_html})
             # If the next entry should be indented in the list, generate a sublist
             next_i = i + 1
