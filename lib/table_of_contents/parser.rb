@@ -79,7 +79,10 @@ module Jekyll
           entry = entries[i]
           if entry[:h_num] == min_h_num
             # If the current entry should not be indented in the list, add the entry to the list
-            toc_list << %(<li class="#{@configuration.item_class} #{@configuration.item_prefix}#{entry[:node_name]}"><a href="##{entry[:id]}">#{entry[:text]}</a>)
+            a = Nokogiri::XML::Node.new "a", @doc
+            a['href'] = "##{entry[:id]}"
+            a.children = entry[:header_content_node].dup.children
+            toc_list << %(<li class="#{@configuration.item_class} #{@configuration.item_prefix}#{entry[:node_name]}">#{a.to_html})
             # If the next entry should be indented in the list, generate a sublist
             next_i = i + 1
             if next_i < entries.count && entries[next_i][:h_num] > min_h_num
