@@ -15,7 +15,7 @@ module Jekyll
       end
 
       def toc
-        build_toc + inject_anchors_into_html
+        inject_anchors_into_html
       end
 
       def build_toc
@@ -23,10 +23,17 @@ module Jekyll
       end
 
       def inject_anchors_into_html
+
+        toc = build_toc
+        toc_div = Nokogiri::XML::Node.new "div", @doc
+        toc_div['class'] = 'toc-container'
+        toc_div.add_child(toc)
+        @entries.first[:header_content_node].add_previous_sibling(toc_div)
+
         @entries.each do |entry|
           # NOTE: `entry[:id]` is automatically URL encoded by Nokogiri
           a = Nokogiri::XML::Node.new "a", @doc
-          a['class'] = 'anchor'
+          a['class'] = 'toc-anchor'
           a['href'] = "##{entry[:id]}"
           a.children = entry[:header_content_node].children
           entry[:header_content_node].children = a
