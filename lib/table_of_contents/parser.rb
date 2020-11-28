@@ -25,9 +25,11 @@ module Jekyll
       def inject_anchors_into_html
         @entries.each do |entry|
           # NOTE: `entry[:id]` is automatically URL encoded by Nokogiri
-          entry[:header_node].wrap(
-            %(<a class="anchor" href="##{entry[:id]}"></a>)
-          )
+          a = Nokogiri::XML::Node.new "a", @doc
+          a['class'] = 'anchor'
+          a['href'] = "##{entry[:id]}"
+          a.children = entry[:header_content_node].children
+          entry[:header_content_node].children = a
         end
 
         @doc.inner_html
@@ -54,7 +56,7 @@ module Jekyll
             text: CGI.escapeHTML(text),
             node_name: node.name,
             header_content: node.children.first,
-            header_node: node,
+            header_content_node: node,
             h_num: node.name.delete('h').to_i
           }
         end
