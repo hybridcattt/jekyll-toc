@@ -28,15 +28,22 @@ module Jekyll
         toc_div = Nokogiri::XML::Node.new "div", @doc
         toc_div['class'] = 'toc-container'
         toc_div.add_child(toc)
-        @entries.first[:header_content_node].add_previous_sibling(toc_div)
+        @entries.first[:header_node].add_previous_sibling(toc_div)
 
         @entries.each do |entry|
           # NOTE: `entry[:id]` is automatically URL encoded by Nokogiri
-          a = Nokogiri::XML::Node.new "a", @doc
-          a['class'] = 'toc-anchor'
-          a['href'] = "##{entry[:id]}"
-          a.children = entry[:header_content_node].children
-          entry[:header_content_node].children = a
+          
+          # wrap header content into <a>
+          # a = Nokogiri::XML::Node.new "a", @doc
+          # a['class'] = 'toc-anchor'
+          # a['href'] = "##{entry[:id]}"
+          # a.children = entry[:header_node].children
+          # entry[:header_node].children = a
+
+          entry[:header_node].add_next_sibling(
+            %(<a class="toc-anchor" href="##{entry[:id]}" aria-hidden="true"><span class="toc-anchor-icon"></span></a>)
+          )
+          
         end
 
         @doc.inner_html
@@ -62,7 +69,7 @@ module Jekyll
             text: CGI.escapeHTML(text),
             node_name: node.name,
             header_content: node.children.first,
-            header_content_node: node,
+            header_node: node,
             h_num: node.name.delete('h').to_i,
             no_toc: node.classes.include?(@configuration.no_toc_class)
           }
@@ -82,7 +89,7 @@ module Jekyll
             # If the current entry should not be indented in the list, add the entry to the list
             a = Nokogiri::XML::Node.new "a", @doc
             a['href'] = "##{entry[:id]}"
-            a.children = entry[:header_content_node].dup.children
+            a.children = entry[:header_node].dup.children
             toc_list << %(<li class="#{@configuration.item_class} #{@configuration.item_prefix}#{entry[:node_name]}">#{a.to_html})
             # If the next entry should be indented in the list, generate a sublist
             next_i = i + 1
