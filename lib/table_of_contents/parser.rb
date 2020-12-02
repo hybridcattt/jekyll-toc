@@ -40,10 +40,10 @@ module Jekyll
           # a.children = entry[:header_node].children
           # entry[:header_node].children = a
 
-          entry[:header_node].add_next_sibling(
+          entry[:header_node].add_child(
             %(<a class="toc-anchor" href="##{entry[:id]}" aria-hidden="true"><span class="toc-anchor-icon"></span></a>)
           )
-          
+
         end
 
         @doc.inner_html
