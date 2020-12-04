@@ -8,27 +8,33 @@ module Jekyll
     class Parser
       include ::Jekyll::TableOfContents::Helper
 
-      def initialize(html, options = {})
+      def initialize(html, options = {}, page_options = {})
         @doc = Nokogiri::HTML::DocumentFragment.parse(html)
-        @configuration = Configuration.new(options)
+        @configuration = Configuration.new(options, page_options)
         @entries = parse_content
       end
 
       def toc
-        inject_anchors_into_html
+        inject_anchors_and_toc_into_html(true)
       end
 
       def build_toc
-        %(<ul class="#{@configuration.list_class}">\n#{build_toc_list(@entries)}</ul>)
+        %(<div class="toc-container"><ul class="#{@configuration.list_class}">\n#{build_toc_list(@entries)}</ul></div>)
       end
 
       def inject_anchors_into_html
+        inject_anchors_and_toc_into_html(false)
+      end
+      
+      def inject_anchors_and_toc_into_html(toc)
 
-        toc = build_toc
-        toc_div = Nokogiri::XML::Node.new "div", @doc
-        toc_div['class'] = 'toc-container'
-        toc_div.add_child(toc)
-        @entries.first[:header_node].add_previous_sibling(toc_div)
+        if toc && @configuration.only_anchors != true
+          toc_node = build_toc
+          # toc_div = Nokogiri::XML::Node.new "div", @doc
+          # toc_div['class'] = 'toc-container'
+          # toc_div.add_child(toc)
+          @entries.first[:header_node].add_previous_sibling(toc_node)
+        end
 
         @entries.each do |entry|
           # NOTE: `entry[:id]` is automatically URL encoded by Nokogiri

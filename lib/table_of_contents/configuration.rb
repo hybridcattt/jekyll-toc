@@ -5,7 +5,8 @@ module Jekyll
     # jekyll-toc configuration class
     class Configuration
       attr_reader :toc_levels, :no_toc_class, :no_toc_section_class,
-                  :list_class, :sublist_class, :item_class, :item_prefix
+                  :list_class, :sublist_class, :item_class, :item_prefix,
+                  :only_anchors
 
       DEFAULT_CONFIG = {
         'min_level' => 1,
@@ -14,11 +15,12 @@ module Jekyll
         'list_class' => 'section-nav',
         'sublist_class' => '',
         'item_class' => 'toc-entry',
-        'item_prefix' => 'toc-'
+        'item_prefix' => 'toc-',
+        'only_anchors' => false
       }.freeze
 
-      def initialize(options)
-        options = generate_option_hash(options)
+      def initialize(options, page_options)
+        options = generate_option_hash(options, page_options)
 
         @toc_levels = options['min_level']..options['max_level']
         @no_toc_class = 'no_toc'
@@ -27,12 +29,13 @@ module Jekyll
         @sublist_class = options['sublist_class']
         @item_class = options['item_class']
         @item_prefix = options['item_prefix']
+        @only_anchors = options['only_anchors']
       end
 
       private
 
-      def generate_option_hash(options)
-        DEFAULT_CONFIG.merge(options)
+      def generate_option_hash(options, page_options)
+        DEFAULT_CONFIG.merge(options).merge(page_options)
       rescue TypeError
         DEFAULT_CONFIG
       end

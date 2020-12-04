@@ -12,7 +12,9 @@ module Jekyll
 
       content_html = context.registers[:page]['content']
       toc_config = context.registers[:site].config['toc'] || {}
-      TableOfContents::Parser.new(content_html, toc_config).build_toc
+      page_toc_config = context.registers[:page]['toc_config']
+
+      TableOfContents::Parser.new(content_html, toc_config, page_toc_config).build_toc
     end
   end
 
@@ -22,19 +24,19 @@ module Jekyll
     def toc_only(html)
       return '' unless toc_enabled?
 
-      TableOfContents::Parser.new(html, toc_config).build_toc
+      TableOfContents::Parser.new(html, toc_config, page_toc_config).build_toc
     end
 
     def inject_anchors(html)
       return html unless toc_enabled?
 
-      TableOfContents::Parser.new(html, toc_config).inject_anchors_into_html
+      TableOfContents::Parser.new(html, toc_config, page_toc_config).inject_anchors_into_html
     end
 
     def toc(html)
       return html unless toc_enabled?
 
-      TableOfContents::Parser.new(html, toc_config).toc
+      TableOfContents::Parser.new(html, toc_config, page_toc_config).toc
     end
 
     private
@@ -46,6 +48,11 @@ module Jekyll
     def toc_config
       @context.registers[:site].config['toc'] || {}
     end
+
+    def page_toc_config
+      @context.registers[:page]['toc_config'] || {}
+    end
+
   end
 end
 
