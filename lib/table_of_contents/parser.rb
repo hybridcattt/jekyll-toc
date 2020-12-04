@@ -90,7 +90,7 @@ module Jekyll
 
         while i < entries.count
           entry = entries[i]
-          include_in_list = entry[:no_toc] == false
+          include_in_list = entry[:no_toc] == false && entry[:h_num] <= @configuration.max_toc_level
           if entry[:h_num] == min_h_num && include_in_list
             # If the current entry should not be indented in the list, add the entry to the list
             a = Nokogiri::XML::Node.new "a", @doc

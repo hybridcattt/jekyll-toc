@@ -6,11 +6,12 @@ module Jekyll
     class Configuration
       attr_reader :toc_levels, :no_toc_class, :no_toc_section_class,
                   :list_class, :sublist_class, :item_class, :item_prefix,
-                  :only_anchors
+                  :only_anchors, :max_toc_level
 
       DEFAULT_CONFIG = {
         'min_level' => 1,
         'max_level' => 6,
+        'max_toc_level' => 6,
         'no_toc_section_class' => 'no_toc_section',
         'list_class' => 'section-nav',
         'sublist_class' => '',
@@ -23,6 +24,7 @@ module Jekyll
         options = generate_option_hash(options, page_options)
 
         @toc_levels = options['min_level']..options['max_level']
+        @max_toc_level = options['max_toc_level']
         @no_toc_class = 'no_toc'
         @no_toc_section_class = options['no_toc_section_class']
         @list_class = options['list_class']
