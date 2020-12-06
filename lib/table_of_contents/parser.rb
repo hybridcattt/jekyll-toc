@@ -19,7 +19,7 @@ module Jekyll
       end
 
       def build_toc
-        %(<section class="toc-container"><p id="toc-on-this-page">On This Page</p><ul class="#{@configuration.list_class}" aria-labelledby="toc-on-this-page">\n#{build_toc_list(@entries)}</ul></section>)
+        %(<section class="toc-container"><p id="toc-on-this-page" role="heading" aria-level="2">On This Page</p><ul class="#{@configuration.list_class}" aria-labelledby="toc-on-this-page">\n#{build_toc_list(@entries)}</ul></section>)
       end
 
       def inject_anchors_into_html
